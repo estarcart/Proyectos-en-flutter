@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:list_usuarios/perfil_usuarios.dart';
 
 class ListaUsuarios extends StatefulWidget {
   const ListaUsuarios({super.key});
@@ -45,10 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void getData() async {
     try{
-    var response = await Dio().get('https://api.npoint.io/bffbb3b6b3ad5e711dd2');
+    var response = await Dio().get('https://api.npoint.io/5cb393746e518d1d8880');
     if(response.statusCode == 200){
       setState(() {
-        jsonList = response.data["items"] as List;
+        jsonList = response.data["elementos"] as List;
+        jsonList = response.data["elementos"] as List;
       });
     }else{
       print(response.statusCode);
@@ -67,18 +69,32 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView.builder(itemBuilder: (BuildContext context, int index) {
 
-        return Card(
+        return Card(       
           child: ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(80),
-              child: Image.network(jsonList[index]["imagen"], width: 50, height: 50, fit: BoxFit.cover),
+              child: Image.network(jsonList[index]["urlImagen"], width: 50, height: 50, fit: BoxFit.cover),
             ),
-            title: Text(jsonList[index]["nombre"]),
+            title: Text(jsonList[index]["nombreCompleto"]),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Carrera: ${jsonList[index]["carrera"]}"),
-                Text("Promedio: ${jsonList[index]["promedio"]}"),
+                Text("Profesion: ${jsonList[index]["profesion"]}"),
+                Text("Universidad: ${jsonList[index]["estudios"][0]["universidad"]}"),
+                ElevatedButton(
+                    child:  const Text('Ver perfil'),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => Perfil(
+                                  nombre: jsonList[index]["nombreCompleto"],
+                                  profesion: jsonList[index]["profesion"],
+                                  edad: jsonList[index]["edad"],
+                                  universidad: jsonList[index]["estudios"][0]["universidad"],
+                                  bachillerato: jsonList[index]["estudios"][0]["bachillerato"],
+                                  urlImagen: jsonList[index]["urlImagen"])));
+                    }),
               ],
             )
           )
